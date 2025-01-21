@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jumping Boy Game</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #e0f7fa;
+      overflow: hidden;
+    }
+    canvas {
+      border: 2px solid #000;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="800" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let boy = {
+      x: 50,
+      y: 300,
+      width: 50,
+      height: 50,
+      color: "#007bff",
+      dy: 0,
+      jumping: false,
+    };
+
+    let block = {
+      x: 800,
+      y: 320,
+      width: 50,
+      height: 50,
+      color: "#ff5722",
+      speed: 5,
+    };
+
+    let gravity = 0.5;
+    let gameOver = false;
+
+    function drawBoy() {
+      ctx.fillStyle = boy.color;
+      ctx.fillRect(boy.x, boy.y, boy.width, boy.height);
+    }
+
+    function drawBlock() {
+      ctx.fillStyle = block.color;
+      ctx.fillRect(block.x, block.y, block.width, block.height);
+    }
+
+    function update() {
+      if (gameOver) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw the boy and block
+      drawBoy();
+      drawBlock();
+
+      // Apply gravity
+      if (boy.y + boy.height < canvas.height) {
+        boy.dy += gravity;
+      } else {
+        boy.dy = 0;
+        boy.jumping = false;
+      }
+      boy.y += boy.dy;
+
+      // Move the block
+      block.x -= block.speed;
+      if (block.x + block.width < 0) {
+        block.x = canvas.width;
+      }
+
+      // Check for collision
+      if (
+        boy.x < block.x + block.width &&
+        boy.x + boy.width > block.x &&
+        boy.y < block.y + block.height &&
+        boy.y + boy.height > block.y
+      ) {
+        gameOver = true;
+        alert("Game Over! Refresh the page to play again.");
+      }
+
+      requestAnimationFrame(update);
+    }
+
+    function jump() {
+      if (!boy.jumping) {
+        boy.dy = -10;
+        boy.jumping = true;
+      }
+    }
+
+    window.addEventListener("keydown", (e) => {
+      if (e.code === "Space") {
+        jump();
+      }
+    });
+
+    update();
+  </script>
+</body>
+</html>
